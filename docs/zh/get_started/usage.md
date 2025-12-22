@@ -86,6 +86,8 @@ megatron 是目前优化最为齐全的训练框架，大家使用 megatron 的�
   - `--sequence-parallel`：megatron 的 sp 是 tp 的一种优化，推荐在使用 tp 的时候一直开启 sp。
   - `--pipeline-model-parallel-size`: pp
   - `--context-parallel-size`：megatron 的 cp，也就是序列并行，一般对应 ring attention；
+
+  如果只想快速验证 CP 的切分是否符合预期而不启动完整环境，可以运行 `examples/cp_dry_run.py` 做一次离线演练，详见《[在本地快速检查 CP 的切分效果](./cp_dry_run.md)》。
   - `--expert-model-parallel-size`：moe 的 ep，每张卡上有 `num_experts / ep_size` 个 expert；
   - `--expert-tensor-parallel-size`：megatron 支持 moe 的 expert 与其他部分采用不同的 tp_size，我们一般称为 etp。
 - 对于重计算，megatron 中一般是配置如下的几个 flag：
