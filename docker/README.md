@@ -16,6 +16,21 @@ The command to build:
 just release
 ```
 
+## Build an image that works on RTX 4090 (Ada)
+
+The default image targets SM90 GPUs (e.g., H100/GB200) and builds flash-attn v3. For RTX 4090 (SM89),
+skip flash-attn v3 and compile extensions only for Ada architectures:
+
+```bash
+docker build \
+  -f docker/Dockerfile \
+  --build-arg ENABLE_FLASH_ATTENTION3=0 \
+  --build-arg CUDA_ARCH_LIST="8.9" \
+  -t slime:4090 .
+```
+
+This keeps flash-attn v2 while avoiding SM90-only kernels and narrows the CUDA arch list to the 4090.
+
 Before each update, we will test the following models with 64xH100:
 
 - Qwen3-4B sync
