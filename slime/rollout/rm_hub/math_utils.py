@@ -477,12 +477,29 @@ def extract_answer(passage: str) -> str:
 
 
 def grade_answer_verl(solution_str, ground_truth):
-    if not ground_truth:
+    if ground_truth is None:
         return False
+
     ground_truth = str(ground_truth)
-    if "\\boxed" in ground_truth:
-        ground_truth = extract_answer(ground_truth)
-    given_answer = extract_answer(solution_str)
-    if given_answer is None:
-        return False
-    return grade_answer_mathd(given_answer, ground_truth) or grade_answer_sympy(given_answer, ground_truth)
+    ground_truth_candidates = [ground_truth]
+    boxed_ground_truth = extract_answer(ground_truth) if "\\boxed" in ground_truth else None
+    if boxed_ground_truth:
+        ground_truth_candidates.append(boxed_ground_truth)
+
+    candidate_answers = []
+    boxed_answer = extract_answer(solution_str)
+    if boxed_answer is not None:
+        candidate_answers.append(boxed_answer)
+
+    answer_line = re.findall(r"(?im)answer\s*:\s*([^\n]+)", solution_str)
+    if answer_line:
+        candidate_answers.append(answer_line[-1])
+
+    candidate_answers.append(solution_str)
+    for given_answer in candidate_answers:
+        if not given_answer:
+            continue
+        for gt in ground_truth_candidates:
+            if grade_answer_mathd(given_answer, gt) or grade_answer_sympy(given_answer, gt):
+                return True
+    return False
