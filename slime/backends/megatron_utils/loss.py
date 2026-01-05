@@ -538,7 +538,8 @@ def policy_loss_function(
     cp_size = mpu.get_context_parallel_world_size()
     cp_group = mpu.get_context_parallel_group() if cp_size > 1 else None
     if need_full_log_probs:
-        with timer("cp_seq_kl_prep"):
+        timer_name = f"cp_seq_kl_prep_cp{cp_size}"
+        with timer(timer_name):
             if cp_size > 1:
                 assert cp_group is not None
                 seq_kls, chunked_loss_masks = _compute_seq_kls_with_cp(
